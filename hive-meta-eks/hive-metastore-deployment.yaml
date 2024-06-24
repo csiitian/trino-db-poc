@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hive-metastore
+  namespace: data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hive-metastore
+  template:
+    metadata:
+      labels:
+        app: hive-metastore
+    spec:
+      containers:
+      - name: hive-metastore
+        image: bde2020/hive:2.3.2-postgresql-metastore
+        ports:
+        - containerPort: 9083
+        volumeMounts:
+        - name: hive-config
+          mountPath: /opt/hive/conf
+      volumes:
+      - name: hive-config
+        configMap:
+          name: hive-config
+

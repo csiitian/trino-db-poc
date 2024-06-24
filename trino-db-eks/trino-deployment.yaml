@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trino
+  namespace: data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trino
+  template:
+    metadata:
+      labels:
+        app: trino
+    spec:
+      containers:
+      - name: trino
+        image: trinodb/trino:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config-properties
+          mountPath: /etc/trino/config.properties
+          subPath: config.properties
+        - name: jvm-config
+          mountPath: /etc/trino/jvm.config
+          subPath: jvm.config
+        - name: node-properties
+          mountPath: /etc/trino/node.properties
+          subPath: node.properties
+        - name: hive-properties
+          mountPath: /etc/trino/catalog/hive.properties
+          subPath: hive.properties
+      volumes:
+      - name: config-properties
+        configMap:
+          name: trino-config
+          items:
+          - key: config.properties
+            path: config.properties
+      - name: jvm-config
+        configMap:
+          name: trino-config
+          items:
+          - key: jvm.config
+            path: jvm.config
+      - name: node-properties
+        configMap:
+          name: trino-config
+          items:
+          - key: node.properties
+            path: node.properties
+      - name: hive-properties
+        configMap:
+          name: trino-config
+          items:
+          - key: hive.properties
+            path: hive.properties
+
